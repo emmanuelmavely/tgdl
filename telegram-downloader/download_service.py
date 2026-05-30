@@ -87,7 +87,7 @@ class DownloadService:
         self.file_data_handler.add_download_files(final_path, message)
 
         end_time, end_hour = self.utils.endTime()
-        elapsed_time = max(self.utils.elapsedTime(start_time, end_time), 1e-3)
+        elapsed_time = max(self.utils.elapsedTime(start_time, end_time), 0.1)
         file_size_bytes, size_str = self.utils.getSize(final_path)
         download_speed_kb = file_size_bytes / elapsed_time / 1024
 
@@ -178,7 +178,7 @@ class DownloadService:
                 return
             state["last_percent"] = percent
             state["last_edit"] = now
-            elapsed = max(now - state["start"], 1e-3)
+            elapsed = max(now - state["start"], 0.1)
             speed_bps = current / elapsed
             speed_mbps = speed_bps / 1024 / 1024
             eta_seconds = int(max((total - current) / speed_bps, 0)) if speed_bps > 0 else 0

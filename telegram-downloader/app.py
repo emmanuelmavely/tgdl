@@ -81,9 +81,10 @@ MEDIA_FILTER = filters.document | filters.photo | filters.video | filters.audio 
 
 def message2file(message: Message):
     if not env.MESSAGE_FILE:
-        return
+        return False
     with open(os.path.join(env.CONFIG_PATH, "messages.txt"), "a", encoding="utf-8") as file:
         file.write(f"MESSAGE_FILE:: {datetime.now():%Y/%m/%d %H:%M:%S}\n{message}\n\n\n\n")
+    return True
 
 
 def is_authorized(message: Message) -> bool:
@@ -165,6 +166,8 @@ def announce_start():
             bot_app.send_message(int(numeric_ids[0]), msg_txt)
         except Exception as e:
             logger.warning(f"Cannot send startup message: {e}")
+    else:
+        logger.info("Startup message skipped: no numeric AUTHORIZED_USER_ID configured")
 
 
 def start_clients():
