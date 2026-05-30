@@ -220,7 +220,7 @@ class DownloadService:
             return final_path
         base, ext = os.path.splitext(final_path)
         index = 1
-        suffix = "copy" if expected_size and os.path.getsize(final_path) == expected_size else "dup"
+        suffix = "same_size_duplicate" if expected_size and os.path.getsize(final_path) == expected_size else "size_mismatch_duplicate"
         candidate = f"{base}_{suffix}_{index}{ext}"
         while os.path.exists(candidate):
             index += 1

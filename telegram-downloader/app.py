@@ -160,10 +160,10 @@ def announce_start():
     print_handler.print_variable("USERBOT_ENABLED", bool(user_app))
     print_handler.print_variable("MONITORED_CHAT_IDS", env.MONITORED_CHAT_IDS)
     print_handler.print_variables()
-    numeric_ids = [user_id for user_id in env.AUTHORIZED_USER_ID if str(user_id).isdigit()]
-    if numeric_ids:
+    numeric_user_ids = [user_id for user_id in env.AUTHORIZED_USER_ID if str(user_id).isdigit()]
+    if numeric_user_ids:
         try:
-            bot_app.send_message(int(numeric_ids[0]), msg_txt)
+            bot_app.send_message(int(numeric_user_ids[0]), msg_txt)
         except Exception as e:
             logger.warning(f"Cannot send startup message: {e}")
     else:
