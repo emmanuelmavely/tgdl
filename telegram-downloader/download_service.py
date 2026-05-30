@@ -87,7 +87,7 @@ class DownloadService:
         self.file_data_handler.add_download_files(final_path, message)
 
         end_time, end_hour = self.utils.endTime()
-        elapsed_time = max(self.utils.elapsedTime(start_time, end_time), 1)
+        elapsed_time = max(self.utils.elapsedTime(start_time, end_time), 1e-3)
         file_size_bytes, size_str = self.utils.getSize(final_path)
         download_speed_kb = file_size_bytes / elapsed_time / 1024
 
@@ -134,7 +134,7 @@ class DownloadService:
                     raise RuntimeError("Downloaded size mismatch")
                 return downloaded, attempts - 1
             except FloodWait as e:
-                wait_for = int(getattr(e, "value", 3)) + 1
+                wait_for = int(getattr(e, "value", 10)) + 1
                 logger.warning(f"FloodWait during download, waiting {wait_for}s")
                 await asyncio.sleep(wait_for)
             except RPCError as e:
@@ -163,7 +163,7 @@ class DownloadService:
 
         state = {"last_percent": -1, "last_edit": 0.0, "start": time.monotonic()}
         percent_step = max(self.env.PROGRESS_PERCENT_STEP, 1)
-        edit_interval = max(self.env.PROGRESS_EDIT_INTERVAL_SEC, 3)
+        edit_interval = max(self.env.PROGRESS_EDIT_INTERVAL_SEC, 1)
 
         async def callback(current, total):
             if not total:
@@ -218,13 +218,11 @@ class DownloadService:
     def _resolve_duplicate(final_path: str, expected_size: Optional[int]) -> str:
         if not os.path.exists(final_path):
             return final_path
-        if expected_size and os.path.getsize(final_path) == expected_size:
-            base, ext = os.path.splitext(final_path)
-            return f"{base}_copy{ext}"
         base, ext = os.path.splitext(final_path)
-        index = 2
-        candidate = f"{base}_{index}{ext}"
+        index = 1
+        suffix = "copy" if expected_size and os.path.getsize(final_path) == expected_size else "dup"
+        candidate = f"{base}_{suffix}_{index}{ext}"
         while os.path.exists(candidate):
             index += 1
-            candidate = f"{base}_{index}{ext}"
+            candidate = f"{base}_{suffix}_{index}{ext}"
         return candidate

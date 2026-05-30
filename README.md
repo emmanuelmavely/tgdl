@@ -160,6 +160,7 @@ services:
      - `ENABLE_USERBOT=true`
      - `USER_SESSION_STRING=<your_pyrogram_session_string>`
      - `MONITORED_CHAT_IDS=-100xxxxxxxxxx`
+   - Session string note: generate it with Pyrogram session-string tooling using your own Telegram account credentials.
 4. Start:
    - `docker compose up -d`
 5. Check logs:

@@ -2,6 +2,7 @@
 import asyncio
 import os
 import re
+import time
 from datetime import datetime
 
 import yt_dlp
@@ -158,9 +159,10 @@ def announce_start():
     print_handler.print_variable("USERBOT_ENABLED", bool(user_app))
     print_handler.print_variable("MONITORED_CHAT_IDS", env.MONITORED_CHAT_IDS)
     print_handler.print_variables()
-    if env.AUTHORIZED_USER_ID and env.AUTHORIZED_USER_ID[0].isdigit():
+    numeric_ids = [user_id for user_id in env.AUTHORIZED_USER_ID if str(user_id).isdigit()]
+    if numeric_ids:
         try:
-            bot_app.send_message(int(env.AUTHORIZED_USER_ID[0]), msg_txt)
+            bot_app.send_message(int(numeric_ids[0]), msg_txt)
         except Exception as e:
             logger.warning(f"Cannot send startup message: {e}")
 
@@ -177,7 +179,7 @@ def start_clients():
         except FloodWait as e:
             wait_for = int(getattr(e, "value", 30)) + 5
             logger.warning(f"FloodWait while starting clients. Retrying in {wait_for}s")
-            asyncio.run(asyncio.sleep(wait_for))
+            time.sleep(wait_for)
         finally:
             try:
                 bot_app.stop()
